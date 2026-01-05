@@ -4,7 +4,7 @@ import { getUserFromRequest } from '@/lib/middleware';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = getUserFromRequest(request);
@@ -14,11 +14,12 @@ export async function PUT(
 
     const body = await request.json();
     const { reason } = body;
+    const { id } = await params;
 
     // Check if booking belongs to user
     const booking = await prisma.booking.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.userId,
       },
     });
@@ -39,7 +40,7 @@ export async function PUT(
 
     // Update booking status
     const updatedBooking = await prisma.booking.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         status: 'cancelled',
         cancellationReason: reason,

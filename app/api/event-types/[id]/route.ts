@@ -5,7 +5,7 @@ import { getUserFromRequest } from '@/lib/middleware';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = getUserFromRequest(request);
@@ -13,9 +13,10 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
     const eventType = await prisma.eventType.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.userId,
       },
     });
@@ -39,7 +40,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = getUserFromRequest(request);
@@ -49,11 +50,12 @@ export async function PUT(
 
     const body = await request.json();
     const validatedData = eventTypeSchema.parse(body);
+    const { id } = await params;
 
     // Check if event type belongs to user
     const existingEventType = await prisma.eventType.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.userId,
       },
     });
@@ -71,7 +73,7 @@ export async function PUT(
         where: {
           userId: user.userId,
           slug: validatedData.slug,
-          id: { not: params.id },
+          id: { not: id },
         },
       });
 
@@ -84,7 +86,7 @@ export async function PUT(
     }
 
     const eventType = await prisma.eventType.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         name: validatedData.name,
         slug: validatedData.slug,
@@ -116,7 +118,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = getUserFromRequest(request);
@@ -124,10 +126,11 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
     // Check if event type belongs to user
     const eventType = await prisma.eventType.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.userId,
       },
     });
@@ -140,7 +143,7 @@ export async function DELETE(
     }
 
     await prisma.eventType.delete({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     return NextResponse.json({ message: 'Event type deleted successfully' });

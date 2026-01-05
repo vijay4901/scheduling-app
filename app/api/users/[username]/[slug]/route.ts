@@ -3,11 +3,12 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { username: string; slug: string } }
+  { params }: { params: Promise<{ username: string; slug: string }> }
 ) {
   try {
+    const { username, slug } = await params;
     const user = await prisma.user.findUnique({
-      where: { username: params.username },
+      where: { username: username },
       select: {
         id: true,
         name: true,
@@ -27,7 +28,7 @@ export async function GET(
     const eventType = await prisma.eventType.findFirst({
       where: {
         userId: user.id,
-        slug: params.slug,
+        slug: slug,
         isActive: true,
       },
     });
