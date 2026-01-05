@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { availabilitySchema } from '@/lib/validations';
 import { getUserFromRequest } from '@/lib/middleware';
+import { z } from 'zod';
+
+type AvailabilityRule = z.infer<typeof availabilitySchema>;
 
 export async function GET(request: NextRequest) {
   try {
@@ -54,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     // Create new availability rules
     const availability = await prisma.availability.createMany({
-      data: validatedRules.map(rule => ({
+      data: validatedRules.map((rule: AvailabilityRule) => ({
         userId: user.userId,
         dayOfWeek: rule.dayOfWeek,
         startTime: rule.startTime,

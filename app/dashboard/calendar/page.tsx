@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function CalendarPage() {
+function CalendarContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [connected, setConnected] = useState(false);
@@ -188,4 +188,14 @@ export default function CalendarPage() {
   );
 }
 
-
+export default function CalendarPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    }>
+      <CalendarContent />
+    </Suspense>
+  );
+}
