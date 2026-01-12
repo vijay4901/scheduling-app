@@ -512,3 +512,4 @@ const nextConfig = {
 **Ready to deploy? Follow Option 1 for the quickest setup! 🚀**
 
 
+

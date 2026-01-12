@@ -452,3 +452,4 @@ Share your booking link: `https://your-app.vercel.app/yourusername`
 
 *Last updated: January 2026*
 
+
